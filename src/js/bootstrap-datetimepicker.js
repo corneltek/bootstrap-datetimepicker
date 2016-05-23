@@ -55,7 +55,7 @@
       this.isInput = this.$element.is('input');
       this.component = false;
       this.componentSelector = options.componentSelector;
-      if (this.$element.find('.input-append') || this.$element.find('.input-prepend'))
+      if (this.$element.find('.input-append').length || this.$element.find('.input-prepend').length)
           this.component = this.$element.find(this.componentSelector);
       this.format = options.format;
       if (!this.format) {
@@ -70,13 +70,17 @@
       if (this.pickTime) {
         if (icon && icon.length) this.timeIcon = icon.data('time-icon');
         if (!this.timeIcon) this.timeIcon = 'icon-time';
-        icon.addClass(this.timeIcon);
+        if (icon) {
+          icon.addClass(this.timeIcon);
+        }
       }
       if (this.pickDate) {
         if (icon && icon.length) this.dateIcon = icon.data('date-icon');
         if (!this.dateIcon) this.dateIcon = 'icon-calendar';
-        icon.removeClass(this.timeIcon);
-        icon.addClass(this.dateIcon);
+        if (icon) {
+          icon.removeClass(this.timeIcon);
+          icon.addClass(this.dateIcon);
+        }
       }
       this.widget = $(getTemplate(this.timeIcon, options.pickDate, options.pickTime, options.pick12HourFormat, options.pickSeconds, options.collapse)).appendTo('body');
       this.minViewMode = options.minViewMode||this.$element.data('date-minviewmode')||0;
@@ -169,11 +173,9 @@
       var formatted = '';
       if (!this._unset) formatted = this.formatDate(this._date);
       if (!this.isInput) {
-        if (this.component){
-          var input = this.$element.find('input');
-          input.val(formatted);
-          this._resetMaskPos(input);
-        }
+        var input = this.$element.find('input');
+        input.val(formatted);
+        this._resetMaskPos(input);
         this.$element.data('date', formatted);
       } else {
         this.$element.val(formatted);
@@ -834,7 +836,7 @@
       this._detachDatePickerGlobalEvents();
       this.widget.remove();
       this.$element.removeData('datetimepicker');
-      this.component.removeData('datetimepicker');
+      this.componen && this.component.removeData('datetimepicker');
     },
 
     formatDate: function(d) {
@@ -1009,12 +1011,8 @@
     },
 
     _attachDatePickerGlobalEvents: function() {
-      $(window).on(
-        'resize.datetimepicker' + this.id, $.proxy(this.place, this));
-      if (!this.isInput) {
-        $(document).on(
-          'mousedown.datetimepicker' + this.id, $.proxy(this.hide, this));
-      }
+      $(window).on('resize.datetimepicker' + this.id, $.proxy(this.place, this));
+      $(document).on('mousedown.datetimepicker' + this.id, $.proxy(this.hide, this));
     },
 
     _detachDatePickerEvents: function() {
